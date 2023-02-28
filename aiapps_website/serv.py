@@ -1,6 +1,7 @@
 from flask import Flask, request , render_template
 import urllib.request
-import ./CAM_NLU
+#from . import CAM_NLU
+from CAM_NLU import extract_comparative
 
 app = Flask(__name__)
 
@@ -9,7 +10,8 @@ def run():
     if request.method == "POST":
        # getting input with name = input in HTML form
         input = request.form.get("input")
-        print(generateCAMURL("Pepsi", "Coca-Cola", "price"))
+        #print(generateCAMURL("Pepsi", "Coca-Cola", "price"))
+        print(extract_comparative(input))
         return answer(input)
     return render_template("form.html")
     
