@@ -1,7 +1,7 @@
 from flask import Flask, request , render_template
 import urllib.request
 #from . import CAM_NLU
-from CAM_NLU import extract_comparative
+from CAM_NLU import Extractor
 
 app = Flask(__name__)
 
@@ -11,7 +11,9 @@ def run():
        # getting input with name = input in HTML form
         input = request.form.get("input")
         #print(generateCAMURL("Pepsi", "Coca-Cola", "price"))
-        print(extract_comparative(input))
+        print(input)
+        e = Extractor()
+        print(e.extract_comparative(input))
         return answer(input)
     return render_template("form.html")
     
@@ -24,7 +26,7 @@ def answer(input):
 
     return(mystr)
 
-def generateCAMURL(obj1,obj2,aspect):
+def generateCAMURL(S):
     baseURL = "http://ltdemos.informatik.uni-hamburg.de/cam-api?fs=FS&objectA=OBJA&objectB=OBJB&aspect1=ASP1&weight1=WEIGHT1"
     changedURL = baseURL.replace("FS", "false")
     changedURL = changedURL.replace("OBJA", obj1)
