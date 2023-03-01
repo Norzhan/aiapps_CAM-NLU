@@ -21,7 +21,7 @@ class Extractor:
 #TODO Find two objects and an aspect to compare (maybe by analysing the parse tree of a comparative sentence?)
 # extract objects and comparative aspect from sentence
 # return list of Strings, list of Strings
-    def ec_sub_case1(self, input_text):
+    def ec_sub_case1(self):
         aspect_half = self.text_list[:self.text_list.index(":")]
         object_half = self.text_list[self.text_list.index(":")+1:]
         if(len(list(set(aspect_half).intersection(self.question_starters))) == 0):
@@ -35,7 +35,7 @@ class Extractor:
         extracted_objects = object_text.split(", ")
         return extracted_objects, extracted_aspects
     
-    def ec_sub_case2(self, input_text):
+    def ec_sub_case2(self):
         obj2 = ' '.join(self.text_list[self.text_list.index("than")+1:])
         aspect_deps = [token.dep_ for token in self.doc]
         than_head = [word for word in self.doc if word.lower_ == "than"][0].head
@@ -45,18 +45,18 @@ class Extractor:
         extracted_objects = [obj1, obj2]
         return extracted_objects, extracted_aspects
     
-    def ec_sub_case3(self, input_text):
+    def ec_sub_case3(self):
         extracted_objects = []
         extracted_aspects = []
         return extracted_objects, extracted_aspects
     
-    def ec_sub_case4(self, input_text):
+    def ec_sub_case4(self):
         extracted_objects = []
         extracted_aspects = []
         return extracted_objects, extracted_aspects
 
-    def ec_sub_caseelse(self,input_text):
-        nlp_text = nlp(input_text)
+    def ec_sub_caseelse(self):
+        nlp_text = self.doc
 
         extracted_objects = [chunk.text for chunk in nlp_text.noun_chunks]      # Assuming most noun-chunks will be objects, most objects will be noun chunks
         extracted_pronouns = [token.text for token in nlp_text if token.pos_ == "PRON"]
@@ -66,7 +66,7 @@ class Extractor:
         if(len(extracted_objects) != 2):        # if not exactly 2 objects have been found, return list of empty lists (no objects, no aspects)
             return [[],[]]
 
-        mod_text = input_text
+        mod_text = self.text
     
         for noun in extracted_objects:          # Removing noun phrases removes adjectives that are not relevant for comparison
             mod_text = mod_text.replace(noun, "")
@@ -75,13 +75,13 @@ class Extractor:
 
         return extracted_objects, extracted_aspects
 
-    def extract_comparative(self, input_text):
+    def extract_comparative(self):
         if ":" in self.text_list:
-            return self.ec_sub_case1(input_text)
+            return self.ec_sub_case1()
         elif "than" in self.text_list:
-            return self.ec_sub_case2(input_text)
+            return self.ec_sub_case2()
         else:
-            return self.ec_sub_caseelse(input_text)
+            return self.ec_sub_caseelse()
 
 
 
