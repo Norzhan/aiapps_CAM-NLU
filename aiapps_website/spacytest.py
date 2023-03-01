@@ -1,5 +1,9 @@
 import spacy
 from spacy import displacy
+
+from CAM_NLU import Extractor
+
+
 # Load English tokenizer, tagger, parser and NER
 nlp = spacy.load("en_core_web_sm")
 
@@ -33,7 +37,6 @@ nlp_text = doc
 #    asp = ["dummy3"]
 
 text_list = [token.lower_ for token in nlp_text]
-print(text_list)
 text_deps = [token.dep_ for token in nlp_text]
 question_starters = ["which", "how", "why", "when", "who", "where", "what"]
 
@@ -79,6 +82,8 @@ else:
     extracted_aspects = []
 #print("OBJECTS: ", extracted_objects)
 #print("ASPECTS: ", extracted_aspects)
+#print(displacy.render(doc, style="dep"))
 
 
-print(displacy.render(doc, style="dep"))
+e = Extractor("Why are cats more chaotic than dogs?")
+print(e.extract_comparative())
