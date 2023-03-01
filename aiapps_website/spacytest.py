@@ -4,32 +4,67 @@ from spacy import displacy
 nlp = spacy.load("en_core_web_sm")
 
 # Process whole documents
-text = ("Which is less dangerous, orange cats or dogs?")
-# cheap: Apple, Android
-# healthy: Cola, Pepsi
-# dangerous: parachuting, diving
-# difficult: german, english
-# chaotic: cats, dogs
+text = ("Are cats or dogs more expensive and fun?")
 doc = nlp(text)
 
 # Analyze syntax
 #print("Noun phrases:", [chunk.text for chunk in doc.noun_chunks])
 #print("Verbs:", [token.dep_ for token in doc ])#if token.pos_ == "NOUN"])
 
-#for token in doc:
-#    print(token.lower_, "|", token.dep_)
-print("-----")
-# Find named entities, phrases and concepts
-#for entity in doc.ents:
-#    print(entity.text, entity.label_)
-print("-----")
-#print(doc.ents)
-print("-----")
+#print("-----")
 #print("Noun phrases:", [chunk.text for chunk in doc.noun_chunks])
 
+nlp_text = doc
+#if " than " not in text:
+#    for token in nlp_text:
+#        if token.text in (" or ", " and "):
+#            obj1 = [' '.join([token.text for token in token.head.lefts if token.pos_ in ("ADJ", "ADV")]) + ' ' + token.head.text]
+#            obj2 = [token.text for token in token.head.rights]
+#            obj2.remove(token.text)
+#            extracted_objects = obj1 + obj2
+#            mod_nlp_text = nlp_text.text
+#            for obj in extracted_objects:
+#                mod_nlp_text = mod_nlp_text.replace(obj, "")
+#            print(mod_nlp_text)
+#            asp = list(token.text for token in nlp(mod_nlp_text) if token.pos_ in ("ADJ", "ADV"))
+#else:
+#    obj1 = ["dummy1"]
+#    obj2 = ["dummy2"]
+#    asp = ["dummy3"]
 
+text_list = [token.lower_ for token in nlp_text]
+text_deps = [token.dep_ for token in nlp_text]
 
-# noun chunks
-# 2 Objekte und 1 vergleichendes Adjektiv finden
+# CASE 1: "What is ASPECT_LIST: OBJ1 or OBJ2?"
+question_starters = ["which", "how", "why", "when", "who", "where", "what"]
+if ":" in text_list:
+    aspect_half = text_list[:text_list.index(":")]
+    object_half = text_list[text_list.index(":")+1:]
+    if(len(list(set(aspect_half).intersection(question_starters))) == 0):
+        aspect_half, object_half = object_half, aspect_half
+
+    aspect_deps = [token.dep_ for token in nlp(' '.join(aspect_half))]
+    aspect_text = ' '.join(aspect_half[aspect_deps.index("ROOT")+1:]).replace(" and ", ", ")
+    extracted_aspects = aspect_text.split(", ")
+
+    object_text = ' '.join(object_half).replace(" or ", ", ").replace(" and ", ", ")
+    extracted_objects = object_text.split(", ")
+    print(extracted_objects, extracted_aspects)
+
+# CASE 2: "(Why/How) is OBJ1 ASPECT_LIST than OBJ2?"
+if "than" in text_list:
+    obj2 = ' '.join(text_list[text_list.index("than")+1:])
+    aspect_deps = [token.dep_ for token in nlp_text]
+    than_head = [word for word in nlp_text if word.lower_ == "than"][0].head
+    aspect_text = [token.lower_ for token in nlp_text if than_head in token.ancestors or than_head == token]
+    extracted_aspects = ' '.join(aspect_text[:aspect_text.index("than")]).replace(" or ", ", ").replace(" and ", ", ").split(", ")
+    obj1 = ' '.join(text_list[text_deps.index("ROOT")+1:text_list.index(' '.join(extracted_aspects).split()[0])])
+    extracted_objects = [obj1, obj2]
+
+# CASE 3: "Is OBJ1 or OBJ2 ASPECT?"
+
+#print("OBJECTS: ", extracted_objects)
+#print("ASPECTS: ", extracted_aspects)
+
 
 print(displacy.render(doc, style="dep"))
