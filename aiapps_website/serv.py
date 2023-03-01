@@ -19,7 +19,8 @@ def run():
     
 def answer(input):
     fp = urllib.request.urlopen("http://ltdemos.informatik.uni-hamburg.de/cam-api?fs=false&objectA=dog&objectB=cat&aspect1=size&weight1=3&aspect2=food&weight2=1")
-    mybytes = fp.read()
+    mybytes = fp.read() 
+    
 
     mystr = mybytes.decode("utf8")
     fp.close()
