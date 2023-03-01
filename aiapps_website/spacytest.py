@@ -4,7 +4,7 @@ from spacy import displacy
 nlp = spacy.load("en_core_web_sm")
 
 # Process whole documents
-text = ("Are cats or dogs more expensive and fun?")
+text = ("How do black cats and big brown dogs")
 doc = nlp(text)
 
 # Analyze syntax
@@ -33,10 +33,11 @@ nlp_text = doc
 #    asp = ["dummy3"]
 
 text_list = [token.lower_ for token in nlp_text]
+print(text_list)
 text_deps = [token.dep_ for token in nlp_text]
+question_starters = ["which", "how", "why", "when", "who", "where", "what"]
 
 # CASE 1: "What is ASPECT_LIST: OBJ1 or OBJ2?"
-question_starters = ["which", "how", "why", "when", "who", "where", "what"]
 if ":" in text_list:
     aspect_half = text_list[:text_list.index(":")]
     object_half = text_list[text_list.index(":")+1:]
@@ -51,8 +52,8 @@ if ":" in text_list:
     extracted_objects = object_text.split(", ")
     print(extracted_objects, extracted_aspects)
 
-# CASE 2: "(Why/How) is OBJ1 ASPECT_LIST than OBJ2?"
-if "than" in text_list:
+# CASE 2: "(Why/How/...) is OBJ1 ASPECT_LIST than OBJ2?"
+elif "than" in text_list:
     obj2 = ' '.join(text_list[text_list.index("than")+1:])
     aspect_deps = [token.dep_ for token in nlp_text]
     than_head = [word for word in nlp_text if word.lower_ == "than"][0].head
@@ -61,8 +62,21 @@ if "than" in text_list:
     obj1 = ' '.join(text_list[text_deps.index("ROOT")+1:text_list.index(' '.join(extracted_aspects).split()[0])])
     extracted_objects = [obj1, obj2]
 
-# CASE 3: "Is OBJ1 or OBJ2 ASPECT?"
+# CASE 3: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT?"
 
+# CASE 4: "What's the difference between OBJ1 and OBJ2?"/"(Why/How/...) Do/Are OBJ1 and OBJ2 differ/different?"/"(Why/How/...) is OBJ1 different from OBJ2?"
+elif " differ" in text:
+    extracted_aspects = ["difference"]
+    if("difference" in text):
+        obj_text = text.split("between")[1]
+        extracted_objects = obj_text.replace(" or ", ", ").replace(" and ", ", ").split(", ")
+    elif(" differ" in text_list[-1] or " differ" in text_list[-2] and "?" in text_list[-1]):
+        extracted_objects = []
+
+
+else:
+    extracted_objects = []
+    extracted_aspects = []
 #print("OBJECTS: ", extracted_objects)
 #print("ASPECTS: ", extracted_aspects)
 

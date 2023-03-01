@@ -37,9 +37,9 @@ class Extractor:
     
     def ec_sub_case2(self, input_text):
         obj2 = ' '.join(self.text_list[self.text_list.index("than")+1:])
-        aspect_deps = [token.dep_ for token in self.nlp_text]
-        than_head = [word for word in self.nlp_text if word.lower_ == "than"][0].head
-        aspect_text = [token.lower_ for token in self.nlp_text if than_head in token.ancestors or than_head == token]
+        aspect_deps = [token.dep_ for token in self.doc]
+        than_head = [word for word in self.doc if word.lower_ == "than"][0].head
+        aspect_text = [token.lower_ for token in self.doc if than_head in token.ancestors or than_head == token]
         extracted_aspects = ' '.join(aspect_text[:aspect_text.index("than")]).replace(" or ", ", ").replace(" and ", ", ").split(", ")
         obj1 = ' '.join(self.text_list[self.text_deps.index("ROOT")+1:self.text_list.index(' '.join(extracted_aspects).split()[0])])
         extracted_objects = [obj1, obj2]
@@ -75,7 +75,7 @@ class Extractor:
 
         return extracted_objects, extracted_aspects
 
-    def extracting(self, input_text):
+    def extract_comparative(self, input_text):
         if ":" in self.text_list:
             return self.ec_sub_case1(input_text)
         elif "than" in self.text_list:
