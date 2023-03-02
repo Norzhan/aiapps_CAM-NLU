@@ -8,7 +8,7 @@ from CAM_NLU import Extractor
 nlp = spacy.load("en_core_web_sm")
 
 # Process whole documents
-text = ("Is Daft Punk or Alvin harder, better, faster and stronger?")
+text = ("Which drink is healthier: coffee or tea?")
 doc = nlp(text)
 
 # Analyze syntax
@@ -90,13 +90,18 @@ elif " differ" in text:
         
 # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
 elif " or " in text:
-    right_edge_obj_text = [token for token in doc if token in [token for token in doc if token.lower_ == "or"][0].head.children][-1]
-    aspect_text = text.split(right_edge_obj_text.text)[-1]
+    or_head = [token for token in doc if token in [t for t in doc if token.lower_ == "or"]][0].head
+    right_edge_obj_text = [token for token in or_head.rights if "?" not in token.text][-1]
+    if (text_list.index(right_edge_obj_text.lower_) == len(text_list)-2 and "?" in text_list[-1]) or text_list.index(right_edge_obj_text.lower_) == len(text_list)-1:
+        aspect_text = text.split(or_head.text)[0].split()
+        aspect_text = ' '.join(aspect_text[aspect_text.index([token.text for token in doc if token.dep_ == "ROOT"][0])+2:])
+    else:
+        aspect_text = text.split(right_edge_obj_text.text)[-1]
     extracted_aspects = aspect_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
     
     obj_text = text.replace(right_edge_obj_text.text, right_edge_obj_text.text+"$SPACE$").split("$SPACE$")[0]
-    extracted_objects = obj_text.split([token.text for token in doc if token.dep_ == "ROOT"][0])[-1].replace(" and ", ", ").replace(" or ", ", ").split(", ")
-
+    extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in doc if "or" in [orhead.text for orhead in token.children]][0]):])
+    extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
 
 
 else:
@@ -104,11 +109,16 @@ else:
     extracted_objects = []
     extracted_aspects = []
 
+
+print("OBJECTS RAW: ", extracted_objects)
+print("ASPECTS RAW: ", extracted_aspects)
+
 for list in [extracted_objects, extracted_aspects]:
     for element in list:
         list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
-        if "?" in element:
-            list[list.index(element)] = element.replace("?","") #remove ?'s from objects if there are any ?'s
+        elem_proc = element.lstrip(' ')
+        if "?" in elem_proc:
+            list[list.index(elem_proc)] = elem_proc.replace("?","") #remove ?'s from objects if there are any ?'s
 
 #print(displacy.render(doc, style="dep"))
 #print(text_list)

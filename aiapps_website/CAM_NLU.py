@@ -71,13 +71,19 @@ class Extractor:
     
     # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
     def ec_sub_case4(self):
-        right_edge_obj_text = [token for token in self.doc if token in [token for token in self.doc if token.lower_ == "or"][0].head.children][-1]
-        aspect_text = self.text.split(right_edge_obj_text.text)[-1]
+        
+        or_head = [token for token in self.doc if token in [t for t in self.doc if token.lower_ == "or"]][0].head
+        right_edge_obj_text = [token for token in or_head.rights if "?" not in token.text][-1]
+        if (self.text_list.index(right_edge_obj_text.lower_) == len(self.text_list)-2 and "?" in self.text_list[-1]) or self.text_list.index(right_edge_obj_text.lower_) == len(self.text_list)-1:
+            aspect_text = self.text.split(or_head.text)[0].split()
+            aspect_text = ' '.join(aspect_text[aspect_text.index([token.text for token in self.doc if token.dep_ == "ROOT"][0])+2:])
+        else:
+            aspect_text = self.text.split(right_edge_obj_text.text)[-1]
         extracted_aspects = aspect_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
     
         obj_text = self.text.replace(right_edge_obj_text.text, right_edge_obj_text.text+"$SPACE$").split("$SPACE$")[0]
-        extracted_objects = obj_text.split([token.text for token in self.doc if token.dep_ == "ROOT"][0])[-1].replace(" and ", ", ").replace(" or ", ", ").split(", ")
-        
+        extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in self.doc if "or" in [orhead.text for orhead in token.children]][0]):])
+        extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
     def ec_sub_caseelse(self):
@@ -112,11 +118,18 @@ class Extractor:
         else:
             result = self.ec_sub_caseelse()
 
+        #for list in result:
+        #    for element in list:
+        #        list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
+        #        if "?" in element:
+        #            list[list.index(element)] = element.replace("?","") #remove ?'s from texts if there are any ?'s
+        
         for list in result:
             for element in list:
                 list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
-                if "?" in element:
-                    list[list.index(element)] = element.replace("?","") #remove ?'s from texts if there are any ?'s
+                elem_proc = element.lstrip(' ')
+                if "?" in elem_proc:
+                    list[list.index(elem_proc)] = elem_proc.replace("?","") #remove ?'s from objects if there are any ?'s
 
         return result
 
