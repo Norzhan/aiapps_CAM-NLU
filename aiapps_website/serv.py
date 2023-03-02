@@ -14,12 +14,17 @@ def run():
         #print(input)
         e = Extractor(input)
         print(e.extract_comparative())
-       
-        return render_template("form.html") + generateObjAspString(e.extract_comparative())
-    return render_template("form.html")
+        if e.check_comparative(input):
+            comparativeHTML = "<div class=\"container\"><br>Your question was found to be comparative.</div>"
+            return render_template("index.html")+ comparativeHTML + generateObjAspString(e.extract_comparative())
+        else:
+            comparativeHTML = "<div class=\"container\"><br>Your question was found to be not comparative.<br>Please ask a comparative question or try a different phrasing.</div>"
+            return render_template("index.html")+ comparativeHTML
+        
+    return render_template("index.html")
     
 def generateObjAspString(extracted):
-    htmlString = "<!DOCTYPE html><html><head><style>div.container {text-align: center;} ul.myUL {display: inline-block;text-align: left;}</style></head><body><div class=\"container\"><h3>Objects:</h3><ul class=\"myUL\">"
+    htmlString = "<body><div class=\"container\"><h3>Objects:</h3><ul class=\"myUL\">"
 
     for object in extracted[0]:
         htmlString += "<li>" + object + "</li>"
