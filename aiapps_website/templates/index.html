@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <style>div.container {text-align: center;} ul.myUL {display: inline-block;text-align: left;}
+        .inputfield {text-align: center;}
+        body {margin-top: 10%;}
+        </style>
+    </head>
+<form action="{{ url_for("run")}}" method="post">
+    <div class= "inputfield">
+    <label for="input"><h3>Comparative Question:</h3></label>
+    <input size="35" type="text" id="input" name="input" placeholder="Your Question">
+    <button type="submit">submit</button>
+    </div>
