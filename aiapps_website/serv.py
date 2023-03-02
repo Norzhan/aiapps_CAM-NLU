@@ -12,10 +12,10 @@ def run():
         input = request.form.get("input")
         #print(generateCAMURL("Pepsi", "Coca-Cola", "price"))
         #print(input)
-        e = Extractor()
-        print(e.extract_comparative(input))
+        e = Extractor(input)
+        print(e.extract_comparative())
        
-        return render_template("form.html") + generateObjAspString(e.extract_comparative(input))
+        return render_template("form.html") + generateObjAspString(e.extract_comparative())
     return render_template("form.html")
     
 def generateObjAspString(extracted):
