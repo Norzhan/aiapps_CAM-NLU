@@ -21,7 +21,9 @@ class Extractor:
 #TODO Find two objects and an aspect to compare (maybe by analysing the parse tree of a comparative sentence?)
 # extract objects and comparative aspect from sentence
 # return list of Strings, list of Strings
-    def ec_sub_case1(self):
+
+    # CASE 1: "What is ASPECT_LIST: OBJ1 or OBJ2?"
+    def ec_sub_case1(self): 
         aspect_half = self.text_list[:self.text_list.index(":")]
         object_half = self.text_list[self.text_list.index(":")+1:]
         if(len(list(set(aspect_half).intersection(self.question_starters))) == 0):
@@ -35,7 +37,8 @@ class Extractor:
         extracted_objects = object_text.split(", ")
         return extracted_objects, extracted_aspects
     
-    def ec_sub_case2(self):
+    # CASE 2: "(Why/How/...) is OBJ1 ASPECT_LIST than OBJ2?"
+    def ec_sub_case2(self): 
         obj2 = ' '.join(self.text_list[self.text_list.index("than")+1:])
         aspect_deps = [token.dep_ for token in self.doc]
         than_head = [word for word in self.doc if word.lower_ == "than"][0].head
@@ -45,14 +48,36 @@ class Extractor:
         extracted_objects = [obj1, obj2]
         return extracted_objects, extracted_aspects
     
-    def ec_sub_case3(self):
-        extracted_objects = []
-        extracted_aspects = []
+    # CASE 3: subcase 1 "What's the difference between OBJ1 and OBJ2?"
+    #         subcase 2 "(Why/How/...) Do/Are OBJ1 and OBJ2 differ/different?"
+    #         subcase 3 "(Why/How/...) does/is OBJ1 differ/different from OBJ2?"
+    def ec_sub_case3(self): 
+        extracted_aspects = ["difference"]
+        if("difference" in self.text): #subcase 1
+            obj_text = self.text.split("between")[1]
+            extracted_objects = obj_text.replace(" or ", ", ").replace(" and ", ", ").split(", ")
+        elif("differ" in self.text_list[-1] or "differ" in self.text_list[-2] and "?" in self.text_list[-1]): #subcase 2
+            obj_text = ' '.join(self.text_list[self.text_list.index([token.text for token in self.doc if token.pos_ in ("AUX", "VERB")][0])+1:self.text_list.index([token.text for token in self.doc if "differ" in token.text][-1])])
+            extracted_objects = obj_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
+        elif(" different from " in self.text or " differ from " in self.text): #subcase 3
+            obj_text = ' '.join(self.text_list[self.text_list.index([token.text for token in self.doc if token.pos_ in ("AUX", "VERB")][0])+1:])
+            if(" different from " in self.text):
+                obj_text = obj_text.replace(" different from ", " differ from ")
+            extracted_objects = obj_text.split(" differ from ")
+        else: #whatever
+            extracted_objects = [chunk.text for chunk in self.doc.noun_chunks if "differ" not in chunk]
+            extracted_aspects = ["difference"]
         return extracted_objects, extracted_aspects
     
+    # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
     def ec_sub_case4(self):
-        extracted_objects = []
-        extracted_aspects = []
+        right_edge_obj_text = [token for token in self.doc if token in [token for token in self.doc if token.lower_ == "or"][0].head.children][-1]
+        aspect_text = self.text.split(right_edge_obj_text.text)[-1]
+        extracted_aspects = aspect_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
+    
+        obj_text = self.text.replace(right_edge_obj_text.text, right_edge_obj_text.text+"$SPACE$").split("$SPACE$")[0]
+        extracted_objects = obj_text.split([token.text for token in self.doc if token.dep_ == "ROOT"][0])[-1].replace(" and ", ", ").replace(" or ", ", ").split(", ")
+        
         return extracted_objects, extracted_aspects
 
     def ec_sub_caseelse(self):
@@ -63,25 +88,37 @@ class Extractor:
         for pron in extracted_pronouns:         # Words like "Which", "Who", "What", etc. should not be considered as objects
             if pron in extracted_objects:
                 extracted_objects.remove(pron)
-        if(len(extracted_objects) != 2):        # if not exactly 2 objects have been found, return list of empty lists (no objects, no aspects)
-            return [[],[]]
+        #if(len(extracted_objects) != 2):        # if not exactly 2 objects have been found, return list of empty lists (no objects, no aspects)
+        #    return [[],[]]
 
         mod_text = self.text
     
         for noun in extracted_objects:          # Removing noun phrases removes adjectives that are not relevant for comparison
             mod_text = mod_text.replace(noun, "")
         mod_nlp_text = nlp(mod_text)
-        extracted_aspects = [token.lemma_ for token in mod_nlp_text if token.pos_ == "ADJ"] # Remaining adjectives may be considered comparison aspects
+        extracted_aspects = [token.text for token in mod_nlp_text if token.pos_ == "ADJ"] # Remaining adjectives may be considered comparison aspects
 
         return extracted_objects, extracted_aspects
 
     def extract_comparative(self):
         if ":" in self.text_list:
-            return self.ec_sub_case1()
+            result = self.ec_sub_case1()
         elif "than" in self.text_list:
-            return self.ec_sub_case2()
+            result = self.ec_sub_case2()
+        elif " differ" in self.text:
+            result = self.ec_sub_case3()
+        elif " or " in self.text:
+            result = self.ec_sub_case4()
         else:
-            return self.ec_sub_caseelse()
+            result = self.ec_sub_caseelse()
+
+        for list in result:
+            for element in list:
+                list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
+                if "?" in element:
+                    list[list.index(element)] = element.replace("?","") #remove ?'s from texts if there are any ?'s
+
+        return result
 
 
 
@@ -97,9 +134,6 @@ class Extractor:
 
     def extracting(self):
 
-    #TODO Grab text input from front end
-        text = "Which is less dangerous and more child-friendly: cats or dogs?" # dummy text
-
     # open webapp and input field
     # check if input sentence is comparative
     # e.g. "Is OBJ1 ASPECT than OBJ2?"
@@ -107,13 +141,10 @@ class Extractor:
         # render selection visually in html
         # else print error message
     # send output to CAM
-        if(self.check_comparative(text)):
-            extracted_info = self.extract_comparative(text)
+        if(self.check_comparative(self.text)):
+            extracted_info = self.extract_comparative(self.text)
             output = extracted_info # 2 lists of strings
-        #TODO Render selected words on webpage
-        #TODO Generate CAM-URL
     
         else:
             output = "Cannot extract comparison from this sentence, please try a different sentence."
-        #TODO Render error message
         print(output)
