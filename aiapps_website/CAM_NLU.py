@@ -70,6 +70,7 @@ class Extractor:
         return extracted_objects, extracted_aspects
     
     # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
+    # PROBLEM: WITHOUT "IS"/"ARE" etc. CRASHES: "dogs or cats better?"
     def ec_sub_case4(self):
         
         or_head = [token for token in self.doc if token in [t for t in self.doc if token.lower_ == "or"]][0].head
