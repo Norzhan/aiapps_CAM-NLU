@@ -8,6 +8,13 @@
   body {
     text-align: center;
   }
+  .container {
+    margin-top: 100px;
+  }
+  .inputfield {
+    margin-top: 10%
+  }
+  
 </style>
 {% endblock %}
 
@@ -17,24 +24,27 @@
     <label for="input">
       <h3>Comparative Question:</h3>
     </label>
-    <input style="font-size:25px;"  size="35" type="text" id="input" name="input" placeholder="Your Question">
+    <input style="font-size:22px;"  size="30" type="text" id="input" name="input" placeholder="Your Question">
     <input class="btn btn-primary" type="submit" value="Submit">
   </div>
  
-  <!--
+  
   <div class="container">
     <div class="row">
       <div class="col-sm">
-        One of three columns
+        <h3>Objects:</h3>
+        {% for object in objects %}
+        <p>{{object}}</p>
+        {% endfor %}
       </div>
       <div class="col-sm">
-        One of three columns
-      </div>
-      <div class="col-sm">
-        One of three columns
+        <h3>Aspects:</h3>
+        {% for aspect in aspects %}
+        <p>{{aspect}}</p>
+        {% endfor %}
       </div>
     </div>
   </div>
--->
+
   {% endblock %}
 
