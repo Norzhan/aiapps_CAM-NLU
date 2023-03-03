@@ -1,11 +1,40 @@
 {% extends "base.html" %}
+{% block header %}
+<style>
+  ul.myUL {
+    text-align: center;
+    list-style-position: inside;
+  }
+  body {
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <form action="{{ url_for("run")}}" method="post">
   <div class="inputfield">
     <label for="input">
       <h3>Comparative Question:</h3>
     </label>
-    <input size="35" type="text" id="input" name="input" placeholder="Your Question">
+    <input style="font-size:25px;"  size="35" type="text" id="input" name="input" placeholder="Your Question">
     <input class="btn btn-primary" type="submit" value="Submit">
   </div>
+ 
+  <!--
+  <div class="container">
+    <div class="row">
+      <div class="col-sm">
+        One of three columns
+      </div>
+      <div class="col-sm">
+        One of three columns
+      </div>
+      <div class="col-sm">
+        One of three columns
+      </div>
+    </div>
+  </div>
+-->
   {% endblock %}
+

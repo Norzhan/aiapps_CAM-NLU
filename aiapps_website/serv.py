@@ -16,7 +16,7 @@ def run():
         print(e.extract_comparative())
         if e.check_comparative(input):
             comparativeHTML = "<div class=\"container\"><br>Your question was found to be comparative.</div>"
-            return render_template("index.html")+ comparativeHTML + generateObjAspString(e.extract_comparative())
+            return render_template("index.html")+ comparativeHTML + generateObjAspString(e.extract_comparative()) + "<div class=\"container\"><br>If the extracted objects and/or aspects are not what you expected, <br>please try a different phrasing.</div>"
         else:
             comparativeHTML = "<div class=\"container\"><br>Your question was found to be not comparative.<br>Please ask a comparative question or try a different phrasing.</div>"
             return render_template("index.html")+ comparativeHTML
@@ -24,7 +24,7 @@ def run():
     return render_template("index.html")
     
 def generateObjAspString(extracted):
-    htmlString = "<body><div class=\"container\"><h3>Objects:</h3><ul class=\"myUL\">"
+    htmlString = "<body><div class=\"container\"><h3 align=\"center\">Objects:</h3><ul class=\"myUL\">"
 
     for object in extracted[0]:
         htmlString += "<li>" + object + "</li>"
