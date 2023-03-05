@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block header %}
+<style>
+  ul.myUL {
+    text-align: center;
+    list-style-position: inside;
+  }
+  body {
+    text-align: center;
+  }
+  .container {
+    margin-top: 50px;
+    width:31.5%;
+  }
+  .inputfield {
+    margin-top: 10%
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<form action="{{ url_for("run")}}" method="post">
+  <div class="inputfield">
+    <label for="input">
+      <h3>Comparative Question:</h3>
+    </label>
+    <div class="form-floating mb-3">
+    <input style="font-size:22px;"  size="30" type="text" id="input" name="input" placeholder="Your Question">
+    <input class="btn btn-primary" type="submit" value="Submit">
+    </div>
+  </div>
+<span style="background-color: #83FF8B;font-size: 25px;">
+  Your question was found to be comparative.
+</span>
+  <div class="container">
+    <div class="row">
+        
+      <div class="col-sm">
+        <h3>Objects:</h3>
+        {% for object in objects %}
+        <p style="background-color: #add8e6;width: 100%;display: inline-block;font-size: 20px">{{object}}</p><br>
+        {% endfor %}
+      </div>
+      <div class="col-sm">
+        <h3>Aspects:</h3>
+        {% for aspect in aspects %}
+        <p style="background-color: #add8e6;width: 100%;display: inline-block;font-size: 20px">{{aspect}}</p><br>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}

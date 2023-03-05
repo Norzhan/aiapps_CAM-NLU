@@ -86,6 +86,7 @@ class Extractor:
         extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
+    #"dogs or cats" --> error
     def ec_sub_caseelse(self):
         nlp_text = self.doc
 
