@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% block content %}
+<form action="{{ url_for("run")}}" method="post">
+    <div class="inputfield">
+      <label for="input">
+        <h3>Comparative Question:</h3>
+      </label>
+      <div class="form-floating mb-3">
+      <input style="font-size:22px;"  size="30" type="text" id="input" name="input" placeholder="Your Question">
+      <input class="btn btn-primary" type="submit" value="Submit">
+      </div>
+    </div>
+    <span style="background-color: #FF4D4D; font-size: 25px;">
+        Your question was found to be not comparative.
+    </span>
+    <p style="font-size: 20px;"<br> Please ask a comparative question or try a different phrasing.
+{% endblock %}

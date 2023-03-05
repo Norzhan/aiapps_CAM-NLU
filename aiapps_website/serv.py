@@ -17,18 +17,14 @@ def run():
         e = Extractor(input)
         print(e.extract_comparative())
         if e.check_comparative(input):
-            comparativeHTML = "<div class=\"container\"><br>Your question was found to be comparative.</div>"
-            return render_template("index.html",objects = e.extract_comparative()[0], aspects = e.extract_comparative()[1])    #+ comparativeHTML + generateObjAspString(e.extract_comparative()) + "<div class=\"container\"><br>If the extracted objects and/or aspects are not what you expected, <br>please try a different phrasing.</div>"
+            #comparativeHTML = "<div class=\"container\"><br>Your question was found to be comparative.</div>"
+            return render_template("results.html",objects = e.extract_comparative()[0], aspects = e.extract_comparative()[1])    #+ comparativeHTML + generateObjAspString(e.extract_comparative()) + "<div class=\"container\"><br>If the extracted objects and/or aspects are not what you expected, <br>please try a different phrasing.</div>"
         else:
             comparativeHTML = "<div class=\"container\"><br>Your question was found to be not comparative.<br>Please ask a comparative question or try a different phrasing.</div>"
-            return render_template("index.html")+ comparativeHTML
+            return render_template("non-comparative.html")
         
     return render_template("index.html")
     
-@app.route("/index", methods =["GET","POST"])
-def index():
-    e = Extractor(input)
-    return render_template("index.html", column1 = e.extract_comparative()[0])
 
 
     
@@ -77,5 +73,5 @@ def appendAspects(changedURL, aspectList):
 
 if __name__ == "__main__":
     webbrowser.open_new_tab("http://127.0.0.1:5000")
-    app.run(debug=True, use_reloader=False)
+    app.run(debug=True) #use_reloader=False
     
