@@ -91,8 +91,8 @@ class Extractor:
         extracted_aspects = aspect_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
     
         obj_text = self.text.replace(right_edge_obj_text.text, right_edge_obj_text.text+"$SPACE$").split("$SPACE$")[0]
-        #extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in self.doc if "or" in [orhead.text for orhead in token.children]][0]):])
-        extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.lower_ for token in self.doc if token in or_head.lefts][0]):])
+        extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in self.doc if "or" in [orhead.text for orhead in token.children]][0]):])
+        #extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.lower_ for token in self.doc if token in or_head.lefts][0]):])
         extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
