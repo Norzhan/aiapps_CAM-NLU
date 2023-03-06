@@ -38,6 +38,8 @@ class Extractor:
         return extracted_objects, extracted_aspects
     
     # CASE 2: "(Why/How/...) is OBJ1 ASPECT_LIST than OBJ2?"
+    # INTERESTING: for gerundiums: "Is GER1 ASPECT than GER2" --> ([GER2],[ASPECT])
+    #         BUT: "Is ADJ1 GER1 ASPECT than ADJ GER2" --> ([ADJ1 GER1, ADJ2 GER2],[ASPECT])
     def ec_sub_case2(self): 
         obj2 = ' '.join(self.text_list[self.text_list.index("than")+1:])
         aspect_deps = [token.dep_ for token in self.doc]
@@ -72,8 +74,15 @@ class Extractor:
     # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
     # PROBLEM: WITHOUT "IS"/"ARE" etc. CRASHES: "dogs or cats better?"
     def ec_sub_case4(self):
-        
-        or_head = [token for token in self.doc if token in [t for t in self.doc if token.lower_ == "or"]][0].head
+        if [token.pos_ for token in self.doc if token.dep_ == "ROOT"] not in ("AUX", "VERB"):
+            self.text = "What's : " + self.text
+            print(self.text)
+            self.doc = nlp(self.text)
+            self.text_list = [token.lower_ for token in self.doc]
+            self.text_deps = [token.dep_ for token in self.doc]
+            return self.ec_sub_case1()
+        or_token = [token for token in self.doc if token.lower_ == "or"]
+        or_head = [token for token in self.doc if token.lower_ == "or"][0].head
         right_edge_obj_text = [token for token in or_head.rights if "?" not in token.text][-1]
         if (self.text_list.index(right_edge_obj_text.lower_) == len(self.text_list)-2 and "?" in self.text_list[-1]) or self.text_list.index(right_edge_obj_text.lower_) == len(self.text_list)-1:
             aspect_text = self.text.split(or_head.text)[0].split()
@@ -87,7 +96,6 @@ class Extractor:
         extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
-    #"dogs or cats" --> error
     def ec_sub_caseelse(self):
         nlp_text = self.doc
 
@@ -120,16 +128,14 @@ class Extractor:
         else:
             result = self.ec_sub_caseelse()
 
-        #for list in result:
-        #    for element in list:
-        #        list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
-        #        if "?" in element:
-        #            list[list.index(element)] = element.replace("?","") #remove ?'s from texts if there are any ?'s
+
         
         for list in result:
             for element in list:
                 list[list.index(element)] = list[list.index(element)].lstrip(' ') # remove leading whitespaces
                 elem_proc = element.lstrip(' ')
+                if element == '':
+                    list.remove('')
                 if "?" in elem_proc:
                     list[list.index(elem_proc)] = elem_proc.replace("?","") #remove ?'s from objects if there are any ?'s
 
@@ -162,4 +168,4 @@ class Extractor:
     
         else:
             output = "Cannot extract comparison from this sentence, please try a different sentence."
-        print(output)
+        print("OUTPUT:", output)

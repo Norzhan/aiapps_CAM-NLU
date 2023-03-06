@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
    
-FROM node:18-alpine
-COPY . /app
-WORKDIR /app
-CMD python /app/serv.py
+FROM python:latest
+COPY . .
+CMD python ./aiapps_website/serv.py
