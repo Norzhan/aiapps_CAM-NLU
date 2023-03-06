@@ -8,7 +8,7 @@ from CAM_NLU import Extractor
 nlp = spacy.load("en_core_web_sm")
 
 # Process whole documents
-text = ("Which drink is healthier: coffee or tea?")
+text = ("are dogs or cats better")
 doc = nlp(text)
 
 # Analyze syntax
@@ -120,7 +120,7 @@ for list in [extracted_objects, extracted_aspects]:
         if "?" in elem_proc:
             list[list.index(elem_proc)] = elem_proc.replace("?","") #remove ?'s from objects if there are any ?'s
 
-#print(displacy.render(doc, style="dep"))
+print(displacy.render(nlp("is " + "dogs or cats" + " different"), style="dep"))
 #print(text_list)
 print("IN SPACYTEST:")
 print("OBJECTS: ", extracted_objects)
