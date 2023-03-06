@@ -72,9 +72,8 @@ class Extractor:
         return extracted_objects, extracted_aspects
     
     # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
-    # PROBLEM: WITHOUT "IS"/"ARE" etc. CRASHES: "dogs or cats better?"
     def ec_sub_case4(self):
-        if [token.pos_ for token in self.doc if token.dep_ == "ROOT"] not in ("AUX", "VERB"):
+        if [token.pos_ for token in self.doc if token.dep_ == "ROOT"][0] not in ["AUX", "VERB"]:
             self.text = "What's : " + self.text
             print(self.text)
             self.doc = nlp(self.text)
@@ -92,7 +91,8 @@ class Extractor:
         extracted_aspects = aspect_text.replace(" and ", ", ").replace(" or ", ", ").split(", ")
     
         obj_text = self.text.replace(right_edge_obj_text.text, right_edge_obj_text.text+"$SPACE$").split("$SPACE$")[0]
-        extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in self.doc if "or" in [orhead.text for orhead in token.children]][0]):])
+        #extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.text for token in self.doc if "or" in [orhead.text for orhead in token.children]][0]):])
+        extracted_objects = ' '.join(obj_text.split()[obj_text.split().index([token.lower_ for token in self.doc if token in or_head.lefts][0]):])
         extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
@@ -147,7 +147,7 @@ class Extractor:
 # check if extracted info forms a comparative sentence (2 objects & min. 1 aspect)
 # return true if it is, else false
     def check_comparative(self, input_text):
-        if(" or " in input_text or " than " in input_text or " and " in input_text):
+        if(" or " in input_text or " than " in input_text or " and " in input_text) and len(self.extract_comparative()[0]) >= 2:
             return True
         return False
 
