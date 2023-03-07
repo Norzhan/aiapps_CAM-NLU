@@ -117,16 +117,19 @@ class Extractor:
         return extracted_objects, extracted_aspects
 
     def extract_comparative(self):
-        if ":" in self.text_list:
-            result = self.ec_sub_case1()
-        elif "than" in self.text_list:
-            result = self.ec_sub_case2()
-        elif " differ" in self.text:
-            result = self.ec_sub_case3()
-        elif " or " in self.text:
-            result = self.ec_sub_case4()
-        else:
-            result = self.ec_sub_caseelse()
+        try:
+            if ":" in self.text_list:
+                result = self.ec_sub_case1()
+            elif "than" in self.text_list:
+                result = self.ec_sub_case2()
+            elif " differ" in self.text:
+                result = self.ec_sub_case3()
+            elif " or " in self.text:
+                result = self.ec_sub_case4()
+            else:
+                result = self.ec_sub_caseelse()
+        except:
+            return [[],[]]
 
 
         
