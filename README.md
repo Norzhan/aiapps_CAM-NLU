@@ -10,7 +10,7 @@ and tell if a question is not comparative.
 ## Technologies
 
 This project uses the following technologies: 
--Python 3.10.9  
+-Python 3.10.9   
 -spaCy  
 -flask  
 -Bootstrap 5.3.0-alpha1  
