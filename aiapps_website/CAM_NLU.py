@@ -17,10 +17,7 @@ class Extractor:
         self.doc = nlp(self.text)
         self.text_list = [token.lower_ for token in self.doc]
         self.text_deps = [token.dep_ for token in self.doc]
-
-#TODO Find two objects and an aspect to compare (maybe by analysing the parse tree of a comparative sentence?)
-# extract objects and comparative aspect from sentence
-# return list of Strings, list of Strings
+        
 
     # CASE 1: "What is ASPECT_LIST: OBJ1 or OBJ2?"
     def ec_sub_case1(self): 
@@ -146,7 +143,6 @@ class Extractor:
 
 
 
-#TODO Take extracted objects and aspects and analyse if they make a comparative sentence.
 # check if extracted info forms a comparative sentence (2 objects & min. 1 aspect)
 # return true if it is, else false
     def check_comparative(self, input_text):
