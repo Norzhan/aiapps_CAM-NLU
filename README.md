@@ -3,7 +3,7 @@ A module/extension to extract objects and aspects from natural language.
 
 ## Introduction
 
-This Project aims to provide CAM (Comparative Argumentative Machine, Language Techonology Group, UHH)
+This Project aims to provide [CAM](https://github.com/uhh-lt/cam) (Comparative Argumentative Machine, Language Techonology Group, UHH)
 with the ability to understand natural language. The goal is that CAM can extract objects and aspects of a comparative question
 and tell if a question is not comparative. 
 
