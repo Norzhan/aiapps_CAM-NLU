@@ -73,8 +73,8 @@ A new tab of your default browser should open at the address: http://127.0.0.1:5
 
 ## Architecture 
 
-The program is started with the serv.py file. This file uses flask and waitress to provide a user interface at localhost:5000. 
-serv.py imports the class Extractor, located in the file CAM_NLU.py and uses two of its functions, extract_comparative and check_comparative. 
+The program is started with the serv.py file. This file uses flask and waitress to provide a user interface at `localhost:5000`. 
+serv.py imports the class `Extractor`, located in the file CAM_NLU.py and uses two of its functions, `extract_comparative()` and `check_comparative()`. 
 The web app expects a text input in the input field. Hitting `ENTER` will forward the input text to an `Extractor` object. Its method `check_comparative()` then checks if the input sentence is a comparative sentence, and if it is, `extract_comparative()` attempts to extract compared objects and aspects from the input sentence. `extract_comparative()` also reverts the judgement of `check_comparative()` if it fails to find at least two objects in the input sentence.  
   
 As of now, both of these methods work primarily based on heuristics. `check_comparative()` returns `True` if the input sentence contains either one or multiple of the words "or", "and" and "than", surrounded by spaces. `extract_comparative()` then analyses the structure of the sentence, assuming it to be any of the following four, or close varaitions:  
