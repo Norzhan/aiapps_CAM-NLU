@@ -33,9 +33,7 @@ This project uses the following technologies:
 
 6) Get the spaCy model by using: python -m spacy download en_core_web_sm  
 
-7) Get the waitress library by using: pip install waitress
-
-8) Move to the aiapps_website folder and use: python serv.py
+7) Move to the aiapps_website folder and use: python serv.py
 
 A new tab of your default browser should open at the address: http://127.0.0.1:5000/.
 
