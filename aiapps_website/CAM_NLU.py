@@ -20,7 +20,7 @@ class Extractor:
         
 
     # CASE 1: "What is ASPECT_LIST: OBJ1 or OBJ2?"
-    def ec_sub_case1(self): 
+    def __ec_sub_case1(self): 
         aspect_half = self.text_list[:self.text_list.index(":")]      # aspects and objects won't stand on the same side of the colon
         object_half = self.text_list[self.text_list.index(":")+1:]
         if(len(list(set(aspect_half).intersection(self.question_starters))) == 0): # if the text is smth like "OBJ1 or OBJ2: Which is ASPECT_LIST?"
@@ -37,7 +37,7 @@ class Extractor:
     # CASE 2: "(Why/How/...) is OBJ1 ASPECT_LIST than OBJ2?"
     # INTERESTING: for gerundiums: "Is GER1 ASPECT than GER2" --> ([GER2],[ASPECT]) (wrong)
     #         BUT: "Is ADJ1 GER1 ASPECT than ADJ GER2" --> ([ADJ1 GER1, ADJ2 GER2],[ASPECT]) (...correct?)
-    def ec_sub_case2(self): 
+    def __ec_sub_case2(self): 
         obj2 = ' '.join(self.text_list[self.text_list.index("than")+1:]) # OBJ2 occurs immediately after "than"
         #aspect_deps = [token.dep_ for token in self.doc]
         than_head = [word for word in self.doc if word.lower_ == "than"][0].head
@@ -50,7 +50,7 @@ class Extractor:
     # CASE 3: subcase 1 "What's the difference between OBJ1 and OBJ2?"
     #         subcase 2 "(Why/How/...) Do/Are OBJ1 and OBJ2 differ/different?"
     #         subcase 3 "(Why/How/...) does/is OBJ1 differ/different from OBJ2?"
-    def ec_sub_case3(self): 
+    def __ec_sub_case3(self): 
         extracted_aspects = ["difference"]    # no other aspects given/assumed
         if("difference" in self.text): #subcase 1
             obj_text = self.text.split("between")[1] # objects will occur after the word "between" in a list.
@@ -69,13 +69,13 @@ class Extractor:
         return extracted_objects, extracted_aspects
     
     # CASE 4: "(Why/how/...) Is OBJ1 or OBJ2 ASPECT_LIST?"
-    def ec_sub_case4(self):
+    def __ec_sub_case4(self):
         if [token.pos_ for token in self.doc if token.dep_ == "ROOT"][0] not in ["AUX", "VERB"]:  # if sentence is just "OBJ1 or OBJ2"
             self.text = "What's : " + self.text                                                   # add "What's : ", making it template for sub case 1
             self.doc = nlp(self.text)
             self.text_list = [token.lower_ for token in self.doc]
             self.text_deps = [token.dep_ for token in self.doc]
-            return self.ec_sub_case1()
+            return self.__ec_sub_case1()
         or_token = [token for token in self.doc if token.lower_ == "or"]                          # find "or"
         or_head = [token for token in self.doc if token.lower_ == "or"][0].head                   # its head's subtree without "or" makes up the objects
         right_edge_obj_text = [token for token in or_head.rights if "?" not in token.text][-1]    # find right most child of or's head (right most word belonging to any object)
@@ -92,7 +92,7 @@ class Extractor:
         extracted_objects = extracted_objects.replace(" and ", ", ").replace(" or ", ", ").split(", ")
         return extracted_objects, extracted_aspects
 
-    def ec_sub_caseelse(self):
+    def __ec_sub_caseelse(self):
         nlp_text = self.doc
 
         extracted_objects = [chunk.text for chunk in nlp_text.noun_chunks]      # Assuming most noun-chunks will be objects, most objects will be noun chunks
@@ -113,15 +113,15 @@ class Extractor:
     def extract_comparative(self):
         try:                             # find comparative key word in text, use corresponding sub case method
             if ":" in self.text_list:
-                result = self.ec_sub_case1()
+                result = self.__ec_sub_case1()
             elif "than" in self.text_list:
-                result = self.ec_sub_case2()
+                result = self.__ec_sub_case2()
             elif " differ" in self.text:
-                result = self.ec_sub_case3()
+                result = self.__ec_sub_case3()
             elif " or " in self.text:
-                result = self.ec_sub_case4()
+                result = self.__ec_sub_case4()
             else:
-                result = self.ec_sub_caseelse()
+                result = self.__ec_sub_caseelse()
         except:
             return [[],[]]  # if analysis gives any sorts of problems, assume sentence has been falsly identified as comparative
 
