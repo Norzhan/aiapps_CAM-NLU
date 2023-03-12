@@ -15,6 +15,7 @@ This project uses the following technologies:
 -flask  
 -Bootstrap 5.3.0-alpha1  
 -waitress  
+-miniconda3  
 
 ## Installation
 
