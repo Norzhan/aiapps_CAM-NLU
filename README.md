@@ -9,12 +9,13 @@ and tell if a question is not comparative.
 
 ## Technologies
 
-This project uses the following technologies: 
--Python 3.10.9
--spaCy
--flask
--Bootstrap 5.3.0-alpha1#
--waitress
+This project uses the following technologies:   
+-Python 3.10.9   
+-spaCy  
+-flask  
+-Bootstrap 5.3.0-alpha1  
+-waitress  
+-miniconda3  
 
 ## Installation
 
