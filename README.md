@@ -13,7 +13,7 @@ This project uses the following technologies:
 -Python 3.10.9  
 -spaCy  
 -flask  
--Bootstrap 5.3.0-alpha1#  
+-Bootstrap 5.3.0-alpha1  
 -waitress  
 
 ## Installation
