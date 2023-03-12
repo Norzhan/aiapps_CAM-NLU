@@ -9,7 +9,7 @@ and tell if a question is not comparative.
 
 ## Technologies
 
-This project uses the following technologies: 
+This project uses the following technologies:   
 -Python 3.10.9   
 -spaCy  
 -flask  
